@@ -1,0 +1,12 @@
+[
+  {
+    "_id": "1761135818753008zf1nec",
+    "username": "sukhvir",
+    "email": "sukhvir@yopmail.com",
+    "password": "$2a$10$1eAfYUI8GaXG9ga/GqOxkOYZRw4TGu5cA3gynoKBcXzlUSADOInDG",
+    "resetPasswordOTP": "455841",
+    "resetPasswordExpires": "2025-10-22T12:36:06.717Z",
+    "createdAt": "2025-10-22T12:23:38.753Z",
+    "updatedAt": "2025-10-22T12:26:06.717Z"
+  }
+]
