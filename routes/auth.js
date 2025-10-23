@@ -5,13 +5,15 @@ const {
   login,
   forgotPassword,
   resetPassword,
+  changePassword,
   getProfile
 } = require('../controllers/authController');
 const {
   signupValidation,
   loginValidation,
   forgotPasswordValidation,
-  resetPasswordValidation
+  resetPasswordValidation,
+  changePasswordValidation
 } = require('../middleware/validation');
 const auth = require('../middleware/auth');
 
@@ -268,6 +270,59 @@ router.post('/forgot-password', forgotPasswordValidation, forgotPassword);
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post('/reset-password', resetPasswordValidation, resetPassword);
+
+/**
+ * @swagger
+ * /api/auth/change-password:
+ *   post:
+ *     summary: Change user password
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - oldPassword
+ *               - newPassword
+ *             properties:
+ *               oldPassword:
+ *                 type: string
+ *                 description: Current password
+ *                 example: "CurrentPassword123"
+ *               newPassword:
+ *                 type: string
+ *                 description: New password (min 6 characters, must contain uppercase, lowercase, and number)
+ *                 example: "NewPassword123"
+ *     responses:
+ *       200:
+ *         description: Password changed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Validation error or incorrect current password
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.post('/change-password', auth, changePasswordValidation, changePassword);
 
 /**
  * @swagger

@@ -7,41 +7,29 @@ class JSONStorage {
     this.dataFile = path.join(__dirname, 'users.json');
     this.users = [];
     this.initialized = false;
-    console.log('📁 JSONStorage constructor - dataFile:', this.dataFile);
   }
 
   async init() {
-    if (this.initialized) {
-      console.log('📁 JSONStorage already initialized');
-      return;
-    }
-    
-    console.log('📁 Initializing JSONStorage...');
-    console.log('📁 Data file path:', this.dataFile);
+    if (this.initialized) return;
     
     try {
       // Check if data file exists, if not create it
       await fs.access(this.dataFile);
-      console.log('📁 Data file exists, reading...');
       const data = await fs.readFile(this.dataFile, 'utf8');
       this.users = JSON.parse(data);
-      console.log('📁 JSON database loaded successfully, users:', this.users.length);
+      console.log('📁 JSON database loaded successfully');
     } catch (error) {
       // File doesn't exist, create empty array
-      console.log('📁 Data file does not exist, creating...');
       this.users = [];
       await this.save();
       console.log('📁 JSON database created successfully');
     }
     this.initialized = true;
-    console.log('📁 JSONStorage initialization complete');
   }
 
   async save() {
     try {
-      console.log('💾 Saving users to JSON file:', this.users.length, 'users');
       await fs.writeFile(this.dataFile, JSON.stringify(this.users, null, 2));
-      console.log('✅ Users saved successfully to', this.dataFile);
     } catch (error) {
       console.error('Error saving to JSON file:', error);
       throw error;
@@ -80,8 +68,6 @@ class JSONStorage {
   // Create new user
   async create(userData) {
     await this.init();
-    console.log('👤 Creating new user:', userData.username, userData.email);
-    
     const user = {
       _id: this.generateId(),
       username: userData.username,
@@ -94,9 +80,7 @@ class JSONStorage {
     };
 
     this.users.push(user);
-    console.log('👥 Total users before save:', this.users.length);
     await this.save();
-    console.log('✅ User created and saved successfully');
     return user;
   }
 

@@ -217,8 +217,11 @@ const resetPassword = async (req, res) => {
       });
     }
 
+    // Hash the new password before saving
+    const hashedPassword = await User.hashPassword(newPassword);
+    
     // Update password
-    user.password = newPassword;
+    user.password = hashedPassword;
     user.resetPasswordOTP = null;
     user.resetPasswordExpires = null;
     await user.save();
@@ -229,6 +232,50 @@ const resetPassword = async (req, res) => {
     });
   } catch (error) {
     console.error('Reset password error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
+// Change Password
+const changePassword = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array()
+      });
+    }
+
+    const { oldPassword, newPassword } = req.body;
+    const user = req.user; // From auth middleware
+
+    // Verify old password
+    const isOldPasswordValid = await user.comparePassword(oldPassword);
+    if (!isOldPasswordValid) {
+      return res.status(400).json({
+        success: false,
+        message: 'Current password is incorrect'
+      });
+    }
+
+    // Hash the new password
+    const hashedNewPassword = await User.hashPassword(newPassword);
+    
+    // Update password
+    user.password = hashedNewPassword;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Password changed successfully'
+    });
+  } catch (error) {
+    console.error('Change password error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -260,5 +307,6 @@ module.exports = {
   login,
   forgotPassword,
   resetPassword,
+  changePassword,
   getProfile
 };

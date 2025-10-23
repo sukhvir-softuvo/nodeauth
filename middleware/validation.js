@@ -57,9 +57,28 @@ const resetPasswordValidation = [
     .withMessage('Password must contain at least one lowercase letter, one uppercase letter, and one number')
 ];
 
+const changePasswordValidation = [
+  body('oldPassword')
+    .notEmpty()
+    .withMessage('Current password is required'),
+  
+  body('newPassword')
+    .isLength({ min: 6 })
+    .withMessage('New password must be at least 6 characters long')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+    .withMessage('New password must contain at least one lowercase letter, one uppercase letter, and one number')
+    .custom((value, { req }) => {
+      if (value === req.body.oldPassword) {
+        throw new Error('New password must be different from current password');
+      }
+      return true;
+    })
+];
+
 module.exports = {
   signupValidation,
   loginValidation,
   forgotPasswordValidation,
-  resetPasswordValidation
+  resetPasswordValidation,
+  changePasswordValidation
 };
